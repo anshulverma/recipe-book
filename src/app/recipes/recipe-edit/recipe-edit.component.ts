@@ -11,6 +11,7 @@ import { Router } from '@angular/router';
 import { Recipe } from 'app/recipes/recipe';
 import { RecipeService } from 'app/recipes/recipe.service';
 import { Subscription } from 'rxjs/Subscription';
+import { Ingredient } from 'app/recipes/ingredient';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -93,5 +94,20 @@ export class RecipeEditComponent implements OnInit, OnDestroy {
       description: [ recipeDescription, Validators.required ],
       ingredients: recipeIngredients
     });
+  }
+
+  onRemoveItem(index: number) {
+    (<FormArray> this.recipeForm.controls[ 'ingredients' ]).removeAt(index);
+    this.recipe.ingredients.splice(index, 1);
+  }
+
+  onAddItem(name: string, amount: number) {
+    (<FormArray> this.recipeForm.controls[ 'ingredients' ]).push(
+      new FormGroup({
+        name: new FormControl(name, [ Validators.required ]),
+        amount: new FormControl(amount, [ Validators.required, Validators.pattern('\\d+') ])
+      })
+    );
+    this.recipe.ingredients.push(new Ingredient(name, amount));
   }
 }
